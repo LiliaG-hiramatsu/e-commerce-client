@@ -48,7 +48,7 @@
       "nombre": "Maceta de cerámica",
       "descripcion": "Maceta personalizada de cerámica.",
       "precio": 19899,
-      "categoria_id": 4,
+      "categoria_id": 3,
       "stock": 24,
       "imagen": "https://picsum.photos/200"
     }
