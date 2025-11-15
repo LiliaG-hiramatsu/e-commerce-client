@@ -1,37 +1,65 @@
 import { useCard } from "../contexts/cardContext";
 import { useState } from "react";
 import OrderModal from "../components/OrderModal";
+import { useNavigate } from "react-router-dom";
 
 export default function CardPage() {
   const { card, removeFromCard, clearCard } = useCard();
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const navigate = useNavigate();
+  
   const total = card.reduce((sum, p) => sum + p.precio * p.cantidad, 0);
 
-  // Abrir modal de compra
+  // Abrir modal
   const handlePurchase = () => {
     setIsModalOpen(true);
   };
 
-  // Manejar vaciar carrito
+  // Vaciar carrito
   const handleClearCard = () => {
     if (window.confirm("¿Estás seguro de que quieres vaciar el carrito?")) {
-      alert("Vaciando carrito...");
       clearCard();
     }
   };
 
-  const handleConfirmOrder = (order) => {
-    // Por ahora mostramos una alerta con los datos de la orden
-    alert("Orden enviada:\n" + JSON.stringify(order, null, 2));
+  // Confirmar orden (recibe datos desde OrderModal)
+  const handleConfirmOrder = async (orderInfo) => {
+    const order = {
+      usuario_id: 1, // temporal
+      items: card.map((p) => ({
+        producto_id: p.id,
+        cantidad: p.cantidad,
+      })),
+      total,
+      ...orderInfo, // dirección, pago, etc. desde el modal
+    };
 
-    // Aquí se puede integrar la llamada al backend (fetch / axios)
-    // ejemplo comentado:
-    // await fetch(`${import.meta.env.VITE_API_URL}/orders`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(order) })
+    try {
+      // Llamada al backend
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/orders`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(order),
+        }
+      );
 
-    // Limpiar carrito y cerrar modal
-    clearCard();
-    setIsModalOpen(false);
+      if (!response.ok) {
+        throw new Error("Error al enviar orden");
+      }
+
+      const result = await response.json();
+      //alert("Orden enviada con éxito:\n" + JSON.stringify(result, null, 2));
+      navigate(`/order-success/${result.orderId}`);
+
+      clearCard();
+      setIsModalOpen(false);
+    } catch (error) {
+      alert("Hubo un problema al enviar la orden");
+      console.error(error);
+    }
   };
 
   return (
@@ -50,6 +78,7 @@ export default function CardPage() {
               >
                 <span>{p.nombre} (x{p.cantidad})</span>
                 <span>${p.precio * p.cantidad}</span>
+
                 <button
                   onClick={() => removeFromCard(p.id)}
                   className="ml-2 text-red-500"

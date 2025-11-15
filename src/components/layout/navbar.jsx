@@ -2,10 +2,18 @@
 import { Link, useNavigate } from "react-router-dom";
 import { useCard } from "../../contexts/cardContext";
 import { useSearch } from "../../contexts/searchContext";
-import data from "../../data.json";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
+
+  const [categorias, setCategorias] = useState([]);
+  useEffect(() => {
+  fetch(`${import.meta.env.VITE_API_URL}/api/categories`)
+    .then((res) => res.json())
+    .then((data) => setCategorias(data))
+    .catch(() => setCategorias([]));
+}, []);
+
   const { card } = useCard();
   const { setSearchQuery } = useSearch();
   const navigate = useNavigate();
@@ -29,22 +37,29 @@ export default function Navbar() {
 
       <div className="relative group">
         <button className="px-4 py-2">Categorías ▼</button>
-        <div className="absolute hidden group-hover:block bg-white text-black rounded shadow-lg z-10 w-48">
+        <div className="absolute left-0 hidden group-hover:block bg-white text-black rounded shadow-lg z-10 w-48">
           <Link
             to="/"
             className="block px-4 py-2 hover:bg-gray-200 font-semibold border-b whitespace-nowrap"
           >
-            ✅ Todos los productos
+            Todos los productos
           </Link>
-          {data.categorias.map((categoria) => (
-            <Link
-              key={categoria.id}
-              to={`/category/${categoria.id}`}
-              className="block px-4 py-2 hover:bg-gray-200"
-            >
-              {categoria.nombre}
-            </Link>
-          ))}
+          {/* Iteramos categorías cargadas desde el backend */}
+          {categorias.length > 0 ? (
+            categorias.map((cat) => (
+              <Link
+                key={cat.id}
+                to={`/category/${cat.id}`}
+                className="block px-4 py-2 hover:bg-gray-200 whitespace-nowrap"
+              >
+                {cat.nombre}
+              </Link>
+            ))
+          ) : (
+            <span className="block px-4 py-2 text-gray-500 italic">
+              (Sin categorías)
+            </span>
+          )}
         </div>
       </div>
 

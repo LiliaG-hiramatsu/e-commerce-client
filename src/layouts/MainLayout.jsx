@@ -8,7 +8,7 @@ export default function MainLayout({ children }) {
       <div className="flex-grow">{children}</div>
 
       <footer className="bg-gray-800 text-white p-4 text-center text-sm mt-6">
-        © {new Date().getFullYear()} Programacion Web ITU 2025. Todos los derechos reservados.
+        © {new Date().getFullYear()} Programación Web ITU 2025. Todos los derechos reservados.
       </footer>
     </div>
   );

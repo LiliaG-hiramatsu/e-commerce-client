@@ -5,36 +5,58 @@ const CardContext = createContext(null);
 export function CardProvider({ children }) {
   const [card, setCard] = useState([]);
 
-  // Ahora acepta una cantidad opcional (por defecto 1)
+  /** 
+   * Agrega un producto al carrito.
+   * Guarda solo lo necesario para facilitar envío al backend.
+   */
   function addToCard(product, cantidad = 1) {
     setCard((prev) => {
       const existing = prev.find((p) => p.id === product.id);
       if (existing) {
         return prev.map((p) =>
-          p.id === product.id ? { ...p, cantidad: p.cantidad + cantidad } : p
+          p.id === product.id
+            ? { ...p, cantidad: p.cantidad + cantidad }
+            : p
         );
       }
-      return [...prev, { ...product, cantidad }];
+
+      return [
+        ...prev,
+        {
+          id: product.id,
+          nombre: product.nombre,
+          precio: product.precio,
+          cantidad,
+        },
+      ];
     });
   }
 
+  /** Remueve un producto del carrito */
   function removeFromCard(id) {
     setCard((prev) => prev.filter((p) => p.id !== id));
   }
 
+  /** Limpia el carrito por completo */
   function clearCard() {
     setCard([]);
   }
 
   return (
-    <CardContext.Provider value={{ card, addToCard, removeFromCard, clearCard }}>
+    <CardContext.Provider
+      value={{
+        card,
+        addToCard,
+        removeFromCard,
+        clearCard,
+      }}
+    >
       {children}
     </CardContext.Provider>
   );
 }
 
-//Esta funcion sirve para usar el contexto del carrito en otros componentes
-//y lanza un error si se usa fuera del proveedor
+/** Hook para acceder al contexto del carrito */
 export function useCard() {
   const context = useContext(CardContext);
   if (!context) {

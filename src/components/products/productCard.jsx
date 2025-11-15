@@ -2,7 +2,7 @@ import { useCard } from "../../contexts/cardContext";
 import { useState } from "react";
 
 export default function ProductCard({ producto }) {
-  const { addToCard } = useCard();
+  const { addToCard } = useCard(); 
   const [isOpen, setIsOpen] = useState(false);
   const [cantidad, setCantidad] = useState(1);
 

@@ -1,14 +1,52 @@
+import { useEffect, useState } from "react";
 import { useSearch } from "../contexts/searchContext";
-import data from "../data.json";
 import ProductCard from "../components/products/productCard.jsx";
 
 export default function SearchPage() {
   const { searchQuery } = useSearch();
 
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchProductos() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/products`);
+        if (!res.ok) throw new Error("Error al obtener productos");
+        const data = await res.json();
+        setProductos(data);
+      } catch (err) {
+        console.error(err);
+        setError("No se pudieron cargar los productos");
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchProductos();
+  }, []);
+
   // Filtrar productos por búsqueda (case-insensitive)
-  const resultados = data.productos.filter((producto) =>
+  const resultados = productos.filter((producto) =>
     producto.nombre.toLowerCase().includes(searchQuery.toLowerCase())
   );
+
+  if (loading) {
+    return (
+      <main className="flex flex-col items-center my-6 w-full">
+        <p>Cargando productos...</p>
+      </main>
+    );
+  }
+
+  if (error) {
+    return (
+      <main className="flex flex-col items-center my-6 w-full">
+        <p className="text-red-500">{error}</p>
+      </main>
+    );
+  }
 
   return (
     <main className="flex flex-col items-center my-6 w-full">

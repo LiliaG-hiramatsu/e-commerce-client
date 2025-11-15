@@ -1,33 +1,55 @@
 import { useParams } from "react-router-dom";
-import data from "../data.json";
-import ProductCard from "../components/products/productCard.jsx";
+import { useEffect, useState } from "react";
+import ProductCard from "../components/products/productCard";
 
 export default function CategoryPage() {
-  const { categoryId } = useParams();
-  
-  // Convertir categoryId a número para comparar correctamente
-  const categoryIdNum = parseInt(categoryId);
-  
-  // Encontrar la categoría por ID
-  const categoria = data.categorias.find((c) => c.id === categoryIdNum);
-  
-  // Filtrar productos por categoría
-  const productos = data.productos.filter(
-    (p) => p.categoria_id === categoryIdNum
-  );
+  const { id } = useParams();
+  const [productos, setProductos] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    async function fetchCategory() {
+      try {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/categories/${id}`);
+        if (!res.ok) throw new Error("Categoría no encontrada");
+
+        const data = await res.json();
+        setProductos(data); // el backend devuelve SOLO productos
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchCategory();
+  }, [id]);
+
+  if (loading) return <p>Cargando categoría...</p>;
+  if (error) return <p style={{ color: "red" }}>{error}</p>;
 
   return (
-    <main className="flex flex-col items-center my-6 w-full">
-      <h2 className="text-2xl font-bold">{categoria?.nombre || "Categoría no encontrada"}</h2>
-      <div className="flex flex-wrap justify-center mt-5 w-full">
-        {productos.length > 0 ? (
-          productos.map((producto) => (
-            <ProductCard key={producto.id} producto={producto} />
-          ))
-        ) : (
-          <p className="text-gray-500">No hay productos en esta categoría</p>
-        )}
-      </div>
-    </main>
+    <div style={{ padding: "20px" }}>
+      <h1>Categoría {id}</h1>
+
+      <h2>Productos:</h2>
+
+      {productos.length === 0 ? (
+        <p>No hay productos en esta categoría.</p>
+      ) : (
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
+            gap: "20px",
+          }}
+        >
+          {productos.map((p) => (
+            <ProductCard key={p.id} producto={p} />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }

@@ -1,25 +1,24 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
-export default function OrderModal({ items = [], total = 0, onClose, onConfirm }) {
+export default function OrderModal({
+  items = [],
+  total = 0,
+  onClose,
+  onConfirm
+}) {
   const [fullName, setFullName] = useState("");
   const [address, setAddress] = useState("");
   const [payment, setPayment] = useState("efectivo");
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const order = {
-      buyer: {
-        fullName,
-        address,
-      },
-      paymentMethod: payment,
-      items,
-      total,
-      createdAt: new Date().toISOString(),
-    };
 
-    // Llama al callback del padre
-    onConfirm(order);
+    // Enviar SOLO lo que CardPage necesita para completar la orden
+    onConfirm({
+      fullName,
+      address,
+      paymentMethod: payment,
+    });
   };
 
   return (
@@ -69,7 +68,9 @@ export default function OrderModal({ items = [], total = 0, onClose, onConfirm }
           </label>
 
           <fieldset className="mt-2">
-            <legend className="text-sm font-medium mb-1">Método de pago</legend>
+            <legend className="text-sm font-medium mb-1">
+              Método de pago
+            </legend>
             <div className="flex gap-4">
               <label className="flex items-center gap-2">
                 <input
