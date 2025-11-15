@@ -32,7 +32,11 @@ export default function CardPage() {
         cantidad: p.cantidad,
       })),
       total,
-      ...orderInfo, // dirección, pago, etc. desde el modal
+      buyer: {
+        fullName: orderInfo.fullName,
+        address: orderInfo.address
+      },
+      paymentMethod: orderInfo.paymentMethod
     };
 
     try {
@@ -43,19 +47,20 @@ export default function CardPage() {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(order),
-        }
-      );
+        });
+      
+      const result = await response.json();
 
       if (!response.ok) {
-        throw new Error("Error al enviar orden");
+        const msg = result?.message || result?.error || "Error al crear la orden";
+        throw new Error(msg);
       }
-
-      const result = await response.json();
       //alert("Orden enviada con éxito:\n" + JSON.stringify(result, null, 2));
       navigate(`/order-success/${result.orderId}`);
 
-      clearCard();
+      clearCard(); //limpieza local
       setIsModalOpen(false);
+
     } catch (error) {
       alert("Hubo un problema al enviar la orden");
       console.error(error);
