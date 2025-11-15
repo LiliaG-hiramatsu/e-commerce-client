@@ -1,4 +1,4 @@
-import { useCard } from "../../contexts/cardContext";
+import { useCard } from "../contexts/cardContext";
 import { useState } from "react";
 
 export default function ProductCard({ producto }) {

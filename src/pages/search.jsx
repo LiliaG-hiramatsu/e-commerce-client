@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import { useSearch } from "../contexts/searchContext";
-import ProductCard from "../components/products/productCard.jsx";
+import ProductCard from "../components/productCard.jsx";
 
 export default function SearchPage() {
   const { searchQuery } = useSearch();
@@ -68,6 +69,14 @@ export default function SearchPage() {
           </p>
         )}
       </div>
+
+      {/* Botón para volver */}
+      <Link 
+        to="/"
+        className="mt-4 inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-xl transition"
+      >
+        Volver al inicio
+      </Link>
     </main>
   );
 }

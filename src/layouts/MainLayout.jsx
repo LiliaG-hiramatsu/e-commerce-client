@@ -1,4 +1,4 @@
-import Navbar from "../components/layout/navbar.jsx";
+import Navbar from "../components/navbar.jsx";
 
 export default function MainLayout({ children }) {
   return (

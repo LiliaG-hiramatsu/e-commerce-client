@@ -1,7 +1,7 @@
 // src/components/layout/Navbar.jsx
 import { Link, useNavigate } from "react-router-dom";
-import { useCard } from "../../contexts/cardContext";
-import { useSearch } from "../../contexts/searchContext";
+import { useCard } from "../contexts/cardContext";
+import { useSearch } from "../contexts/searchContext";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
@@ -33,7 +33,10 @@ export default function Navbar() {
 
   return (
     <nav className="flex justify-between items-center px-6 py-3 bg-gray-900 text-white gap-4">
-      <Link to="/" className="text-xl font-bold whitespace-nowrap">E-Commerce C2-B</Link>
+      <Link to="/" className="text-xl font-bold whitespace-nowrap">
+        <img className="w-[100px] inline" src="/logo.png" alt="logo ecommerce" />
+        E-Commerce C2-B
+      </Link>
 
       <div className="relative group">
         <button className="px-4 py-2">Categorías ▼</button>
